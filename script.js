@@ -82,23 +82,31 @@ boxColorItem.forEach(colorItem =>{
 
         // Sauvegarde de la couleur favorite dans le storage
         else {
-        body.classList = item.target.classList
-        window.localStorage.setItem("colorBG", item.target.className)
+            body.classList = item.target.classList
+            window.localStorage.setItem("colorBG", item.target.className)
         }
     })
 })
 
-// Récupération de l'élément cliqué
-articles.forEach(tacheItem =>{
-    tacheItem.addEventListener("click", (item)=>{
+// Déselectionner
+document.addEventListener("click",(el)=>{
+    console.log(el.target);
+    if (el.target == body){
+        tacheSelect.target.className = ""
+    }
+})
+
+// Sélection d'un article stocké dans la variable tacheSelect + animation visuelle
+document.addEventListener("click",(el)=>{
+    if(el.target.localName == "article"){
         if (document.querySelector(".activeArticle")){
             animation = document.querySelector(".activeArticle")
             console.log(animation);
             animation.className = ""
         }
-        tacheSelect = item
+        tacheSelect = el
         tacheSelect.target.className = "activeArticle"
-    })
+    };
 })
 
 
