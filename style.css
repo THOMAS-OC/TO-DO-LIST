@@ -149,3 +149,25 @@ input{
     }
 
 }
+
+
+button{
+    display: block;
+    margin: 100px auto;
+    text-align: center;
+    width: 100px;
+    height: 50px;
+    background-color: green;
+    border: none;
+    cursor: pointer;
+    border-radius: 10px;
+    font-weight: bolder;
+    color: wheat;
+    font-size: 20px;
+    transition-duration: 1s;
+}
+
+
+button:hover{
+    width: 120px;
+}

@@ -11,6 +11,7 @@ let tacheSelect = document.querySelector("article")
 let nextIndex = 0
 let nextSection = ""
 let previousSection = ""
+const button = document.querySelector("button")
 
 // Affichage de la couleur
 body.className = window.localStorage.getItem("colorBG")
@@ -197,4 +198,27 @@ sections.forEach(sections =>{
             input.remove()
         }
     })
+})
+
+// Boucle de sauvegarde
+
+// parcourir toutes les sections
+    // pour la section x
+    // parcourir tous les articles --> document.querySelectorAll(`${section} article`)
+    // Récupérer le texte de chaque article et les séparer par des virgules
+    // enregistrement dans le storage --> window.localStorage.setItem(section, string)
+
+button.addEventListener("click", ()=>{
+
+    for (let section of listSection){
+        dataStorageList = []
+        // Selectionner tous les articles d'une section
+        articlesInSection = document.querySelectorAll(`#${section} article`)
+        // Boucle dans ces articles
+        for (let article of articlesInSection){
+            dataStorageList.push(article.innerText)
+            console.log(dataStorageList);
+        }
+    }
+    
 })
