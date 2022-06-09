@@ -2,15 +2,15 @@
 const fleche = document.getElementsByClassName("arrow")[0]
 const boxColor = document.getElementsByTagName("aside")[0]
 const boxColorItem = document.querySelectorAll("aside div:not(.arrow)")
-console.log(boxColorItem);
 // éléments utilitaires
 const body = document.querySelector("body")
 const sections = document.querySelectorAll("section")
 let posBoxcolor = true 
 const listSection = ["todo", "inProgress", "ended"]
 let tacheSelect = document.querySelector("article")
-let indexTacheSelect = listSection.indexOf(tacheSelect.target)
 let nextIndex = 0
+let nextSection = ""
+let previousSection = ""
 
 // Affichage de la couleur
 body.className = window.localStorage.getItem("colorBG")
@@ -24,7 +24,6 @@ for (let section of listSection){
     section_en_cours = document.getElementById(section)
     let tasks = window.localStorage.getItem(section);
     tasks = tasks.split(",");
-    console.log(tasks);
     for (let task of tasks){
         if (task){
             let newArticle = document.createElement("article")
@@ -46,7 +45,6 @@ const removeChildStorage = (section, element) => {
         // Suppression de l'élément ciblé
         indexDelete = listDataStorage.indexOf(element)
         listDataStorage.splice(indexDelete, indexDelete)
-        console.log(listDataStorage);
         // Enregistrement dans le localStorage
         window.localStorage.setItem(section, listDataStorage.toString())
     }
@@ -55,7 +53,41 @@ const removeChildStorage = (section, element) => {
     }
 }
 
+// Fonction qui retourne la section suivante
+const nextSectionUpdate = () =>{
 
+    parentTaskSelect = tacheSelect.parentNode.id
+    if (parentTaskSelect == "todo"){
+        nextSection = "inProgress"
+    }
+    else if (parentTaskSelect == "inProgress") {
+        nextSection = "ended"
+    }
+    else {
+        nextSection = ""
+    }
+    console.log("Section suivante : " + nextSection);
+
+}
+
+// Fonction qui retourne le nom de la section suivante
+const previousSectionUpdate = () =>{
+
+    parentTaskSelect = tacheSelect.parentNode.id
+    if (parentTaskSelect == "inProgress"){
+        previousSection = "todo"
+    }
+    else if (parentTaskSelect == "ended") {
+        previousSection = "inProgress"
+    }
+    else {
+        previousSection = ""
+    }
+    console.log("Section précédante : " + previousSection);
+}
+
+
+// Show/Hide sur la boite de couleur en bas à droite
 fleche.addEventListener("click", ()=>{
 
     if (posBoxcolor){
@@ -77,7 +109,6 @@ boxColorItem.forEach(colorItem =>{
     colorItem.addEventListener("click", (item)=>{
         // Bouton de repli de la boite de couleurs
         if(item.target.className == "arrow"){
-            console.log("Repli de la box de couleur");
         }
 
         // Sauvegarde de la couleur favorite dans le storage
@@ -90,22 +121,22 @@ boxColorItem.forEach(colorItem =>{
 
 // Déselectionner
 document.addEventListener("click",(el)=>{
-    console.log(el.target);
     if (el.target == body){
-        tacheSelect.target.className = ""
+        tacheSelect.className = ""
     }
 })
 
 // Sélection d'un article stocké dans la variable tacheSelect + animation visuelle
 document.addEventListener("click",(el)=>{
     if(el.target.localName == "article"){
+        tacheSelect = el.target
+        nextSectionUpdate()
+        previousSectionUpdate()
         if (document.querySelector(".activeArticle")){
             animation = document.querySelector(".activeArticle")
-            console.log(animation);
             animation.className = ""
         }
-        tacheSelect = el
-        tacheSelect.target.className = "activeArticle"
+        tacheSelect.className = "activeArticle"
     };
 })
 
@@ -115,47 +146,39 @@ document.addEventListener("keydown", (touch)=>{
 
     // Touche pour déplacer la tâche à droite
     if(touch.key == "ArrowRight"){
-        console.log("Déplacement vers la droite");
-        console.log(tacheSelect.target.parentNode)
-        indexTacheSelect = tacheSelect.target.parentNode.id
-        indexTacheSelect = listSection.indexOf(indexTacheSelect)
-        nextIndex = indexTacheSelect + 1
-        console.log(indexTacheSelect);
-        nextSection = document.getElementById(`${listSection[nextIndex]}`)
-        console.log(nextSection);
-        nextSection.appendChild(tacheSelect.target)
+        if (nextSection){
+            console.log("Déplacement vers la droite");
+            console.log(document.getElementById(nextSection));
+            document.getElementById(nextSection).appendChild(tacheSelect)
+            nextSectionUpdate()
+            previousSectionUpdate()
+        }
     }
 
     // Touche pour déplacer la tâche à gauche
     else if(touch.key == "ArrowLeft"){
-        console.log("Déplacement vers la gauche");
-        console.log(tacheSelect.target.parentNode)
-        indexTacheSelect = tacheSelect.target.parentNode.id
-        indexTacheSelect = listSection.indexOf(indexTacheSelect)
-        console.log(indexTacheSelect)
-        nextIndex = indexTacheSelect - 1
-        console.log(indexTacheSelect);
-        nextSection = document.getElementById(`${listSection[nextIndex]}`)
-        console.log(nextSection);
-        nextSection.appendChild(tacheSelect.target)
+        if (previousSection){
+            console.log("Déplacement vers la gauche");
+            console.log(document.getElementById(previousSection));
+            document.getElementById(previousSection).appendChild(tacheSelect)
+            nextSectionUpdate()
+            previousSectionUpdate()
+        }
     }
 
     // Touche de suppression
     else if(touch.key == "Delete"){
-        console.log(tacheSelect.target.innerText);
-        removeChildStorage(tacheSelect.target.parentNode.id, tacheSelect.target.innerText)
-        tacheSelect.target.remove()
+        removeChildStorage(tacheSelect.parentNode.id, tacheSelect.innerText)
+        tacheSelect.remove()
     }
 
     // Touche entrée pour sauvegarder
     else if(touch.key == "Enter"){
         if (document.querySelector("input").value){
-            console.log(document.querySelector("input"));
             let articleNew = document.createElement("article")
             articleNew.innerText  = document.querySelector("input").value
             document.querySelector("input").parentNode.appendChild(articleNew)
             articles = document.querySelectorAll("article")
-            
         }
     }
 })
@@ -174,5 +197,4 @@ sections.forEach(sections =>{
             input.remove()
         }
     })
-
 })
