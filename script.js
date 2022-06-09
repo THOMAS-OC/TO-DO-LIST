@@ -1,8 +1,8 @@
 // Elements d'affichage
 const fleche = document.getElementsByClassName("arrow")[0]
 const boxColor = document.getElementsByTagName("aside")[0]
-const boxColorItem = document.querySelectorAll("aside div")
-
+const boxColorItem = document.querySelectorAll("aside div:not(.arrow)")
+console.log(boxColorItem);
 // éléments utilitaires
 const body = document.querySelector("body")
 const sections = document.querySelectorAll("section")
@@ -55,10 +55,11 @@ const removeChildStorage = (section, element) => {
     }
 }
 
+
 fleche.addEventListener("click", ()=>{
 
     if (posBoxcolor){
-        boxColor.style.transform = "translateX(200px)"
+        boxColor.style.transform = "translateX(270px)"
         posBoxcolor = false
         fleche.style.transform = "rotate(0.5turn)"
     }
@@ -71,11 +72,15 @@ fleche.addEventListener("click", ()=>{
 
 })
 
+
 boxColorItem.forEach(colorItem =>{
     colorItem.addEventListener("click", (item)=>{
+        // Bouton de repli de la boite de couleurs
         if(item.target.className == "arrow"){
             console.log("Repli de la box de couleur");
         }
+
+        // Sauvegarde de la couleur favorite dans le storage
         else {
         body.classList = item.target.classList
         window.localStorage.setItem("colorBG", item.target.className)
@@ -99,6 +104,8 @@ articles.forEach(tacheItem =>{
 
 // Déplacement des tâches d'un groupe à l'autre
 document.addEventListener("keydown", (touch)=>{
+
+    // Touche pour déplacer la tâche à droite
     if(touch.key == "ArrowRight"){
         console.log("Déplacement vers la droite");
         console.log(tacheSelect.target.parentNode)
@@ -111,6 +118,7 @@ document.addEventListener("keydown", (touch)=>{
         nextSection.appendChild(tacheSelect.target)
     }
 
+    // Touche pour déplacer la tâche à gauche
     else if(touch.key == "ArrowLeft"){
         console.log("Déplacement vers la gauche");
         console.log(tacheSelect.target.parentNode)
@@ -124,12 +132,14 @@ document.addEventListener("keydown", (touch)=>{
         nextSection.appendChild(tacheSelect.target)
     }
 
+    // Touche de suppression
     else if(touch.key == "Delete"){
         console.log(tacheSelect.target.innerText);
         removeChildStorage(tacheSelect.target.parentNode.id, tacheSelect.target.innerText)
         tacheSelect.target.remove()
     }
 
+    // Touche entrée pour sauvegarder
     else if(touch.key == "Enter"){
         if (document.querySelector("input").value){
             console.log(document.querySelector("input"));
