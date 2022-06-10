@@ -11,10 +11,19 @@ let tacheSelect = document.querySelector("article")
 let nextIndex = 0
 let nextSection = ""
 let previousSection = ""
-const button = document.querySelector("button")
+const button = document.querySelector("button.save")
+const buttonDelete = document.querySelector("button.delete")
+
+const buttonSaveArticle = document.querySelector(".saveArticle")
+const buttonAnnuleArticle = document.querySelector(".deleteArticle")
 
 // Affichage de la couleur
-body.className = window.localStorage.getItem("colorBG")
+if (window.localStorage.getItem("colorBG")){
+    body.className = window.localStorage.getItem("colorBG")
+}
+else {
+    body.className = "blueGradient"
+}
 
 // Affichage des tâches
 // window.localStorage.setItem("todo", "Vaiselle,course,faire le pain")
@@ -24,35 +33,19 @@ body.className = window.localStorage.getItem("colorBG")
 for (let section of listSection){
     section_en_cours = document.getElementById(section)
     let tasks = window.localStorage.getItem(section);
-    tasks = tasks.split(",");
-    for (let task of tasks){
-        if (task){
-            let newArticle = document.createElement("article")
-            newArticle.innerText = task
-            section_en_cours.appendChild(newArticle)
+    if (tasks){
+        tasks = tasks.split(",");
+        for (let task of tasks){
+            if (task){
+                let newArticle = document.createElement("article")
+                newArticle.innerText = task
+                section_en_cours.appendChild(newArticle)
+            }
         }
     }
 }
 
 let articles = document.querySelectorAll("article")
-
-// fonction qui supprime un élément du storage
-const removeChildStorage = (section, element) => {
-    // Cibler la bonne section
-    let listDataStorage = window.localStorage.getItem(section)
-    // conversion en liste
-    if (listDataStorage.includes(",")){
-        listDataStorage = listDataStorage.split(",")
-        // Suppression de l'élément ciblé
-        indexDelete = listDataStorage.indexOf(element)
-        listDataStorage.splice(indexDelete, indexDelete)
-        // Enregistrement dans le localStorage
-        window.localStorage.setItem(section, listDataStorage.toString())
-    }
-    else {
-        window.localStorage.setItem(section, "")
-    }
-}
 
 // Fonction qui retourne la section suivante
 const nextSectionUpdate = () =>{
@@ -71,7 +64,7 @@ const nextSectionUpdate = () =>{
 
 }
 
-// Fonction qui retourne le nom de la section suivante
+// Fonction qui retourne le nom de la section précédente
 const previousSectionUpdate = () =>{
 
     parentTaskSelect = tacheSelect.parentNode.id
@@ -127,7 +120,7 @@ document.addEventListener("click",(el)=>{
     }
 })
 
-// Sélection d'un article stocké dans la variable tacheSelect + animation visuelle
+// Sélection d'un article avec stockage dans la variable tacheSelect + animation visuelle
 document.addEventListener("click",(el)=>{
     if(el.target.localName == "article"){
         tacheSelect = el.target
@@ -139,6 +132,42 @@ document.addEventListener("click",(el)=>{
         }
         tacheSelect.className = "activeArticle"
     };
+})
+
+// Gestion du clic droit
+document.addEventListener("dblclick", (el) => {
+    if(el.target.localName == "article"){
+        // Ouverture de la modale
+        document.querySelector(".updateTask").className = "updateTask on"
+        console.log(document.querySelector("div input"));
+        document.querySelector("div input").value = el.target.innerText
+        tacheSelect = el.target
+        nextSectionUpdate()
+        previousSectionUpdate()
+
+        if (document.querySelector(".activeArticle")){
+            animation = document.querySelector(".activeArticle")
+            animation.className = ""
+        }
+        tacheSelect.className = "activeArticle"
+    };
+
+
+})
+
+// Modification d'une tâche
+buttonSaveArticle.addEventListener("click", () => {
+    // Modification de la tâche
+    let inputSetArticle = document.querySelector("div input")
+    tacheSelect.innerText = inputSetArticle.value.trim()
+    // Fermeture de la modale
+    document.querySelector(".updateTask").className = "updateTask"
+})
+
+// Annulation de la modification d'une tâche
+buttonAnnuleArticle.addEventListener("click", () => {
+    // Fermeture de la modale
+    document.querySelector(".updateTask").className = "updateTask"
 })
 
 
@@ -169,7 +198,6 @@ document.addEventListener("keydown", (touch)=>{
 
     // Touche de suppression
     else if(touch.key == "Delete"){
-        removeChildStorage(tacheSelect.parentNode.id, tacheSelect.innerText)
         tacheSelect.remove()
     }
 
@@ -189,12 +217,13 @@ sections.forEach(sections =>{
     sections.addEventListener("mouseenter", (section)=>{
         let newInput = document.createElement("input")
         newInput.setAttribute("placeholder", "Faire...")
+        newInput.className = "inputArticle"
         section.target.appendChild(newInput)
     })
 
     sections.addEventListener("mouseleave", (section)=>{
-        while(document.querySelector("input")){
-            let input = document.querySelector("input")
+        while(document.querySelector(".inputArticle")){
+            let input = document.querySelector(".inputArticle")
             input.remove()
         }
     })
@@ -208,17 +237,52 @@ sections.forEach(sections =>{
     // Récupérer le texte de chaque article et les séparer par des virgules
     // enregistrement dans le storage --> window.localStorage.setItem(section, string)
 
-button.addEventListener("click", ()=>{
-
+function updateStorage(){
     for (let section of listSection){
-        dataStorageList = []
+        let dataStorageList = []
+        let dataStorageStr = ""
         // Selectionner tous les articles d'une section
         articlesInSection = document.querySelectorAll(`#${section} article`)
         // Boucle dans ces articles
         for (let article of articlesInSection){
-            dataStorageList.push(article.innerText)
-            console.log(dataStorageList);
+            dataStorageList.push(article.innerText.trim())
+            dataStorageStr = dataStorageList.toString()
+            console.log("Chaine finale " + dataStorageStr);
         }
+        // Enregistrement final dans le storage
+        window.localStorage.setItem(section, dataStorageStr)
     }
+}
+
+button.addEventListener("click", ()=>{
+
+    for (let section of listSection){
+        let dataStorageList = []
+        let dataStorageStr = ""
+        // Selectionner tous les articles d'une section
+        articlesInSection = document.querySelectorAll(`#${section} article`)
+        // Boucle dans ces articles
+        for (let article of articlesInSection){
+            dataStorageList.push(article.innerText.trim())
+            dataStorageStr = dataStorageList.toString()
+            console.log("Chaine finale " + dataStorageStr);
+        }
+        // Enregistrement final dans le storage
+        window.localStorage.setItem(section, dataStorageStr)
+    }
+    
+})
+
+// Formatage des tâches
+buttonDelete.addEventListener("click", ()=>{
+
+    let allArticles = document.querySelectorAll("article")
+    console.log(allArticles);
+
+    allArticles.forEach((article) => {
+        article.remove()
+    })
+
+    window.localStorage.clear()
     
 })
