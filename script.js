@@ -203,10 +203,10 @@ document.addEventListener("keydown", (touch)=>{
 
     // Touche entrée pour sauvegarder
     else if(touch.key == "Enter"){
-        if (document.querySelector("input").value){
+        if (document.querySelector(".inputArticle").value){
             let articleNew = document.createElement("article")
-            articleNew.innerText  = document.querySelector("input").value
-            document.querySelector("input").parentNode.appendChild(articleNew)
+            articleNew.innerText  = document.querySelector(".inputArticle").value
+            document.querySelector(".inputArticle").parentNode.appendChild(articleNew)
             articles = document.querySelectorAll("article")
         }
     }
